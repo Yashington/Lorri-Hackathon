@@ -1,8 +1,18 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @custom-variant dark (&:is(.dark *));
+/* app/globals.css */
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-slate-50 via-white to-slate-50;
+  }
+}
+
+.glass-card {
+  @apply border-0 bg-white/70 backdrop-blur-lg shadow-xl;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -116,11 +126,3 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}

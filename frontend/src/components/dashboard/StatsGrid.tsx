@@ -10,9 +10,18 @@ import {
 } from "lucide-react";
 import AnimatedCounter from "@/components/shared/AnimatedCounter";
 import type { DashboardStats } from "@/lib/types";
+import { Area, AreaChart, ResponsiveContainer } from "recharts";
 
 interface StatsGridProps {
   stats: DashboardStats;
+}
+
+function generateSparklineData(label: string) {
+  // Generate mock trend data for sparkline visualization
+  const baseValue = Math.random() * 50 + 50; // 50-100
+  return Array.from({ length: 12 }, (_, i) => ({
+    value: baseValue + Math.sin(i / 3) * 20 + Math.random() * 10,
+  }));
 }
 
 export default function StatsGrid({ stats }: StatsGridProps) {
@@ -72,6 +81,20 @@ export default function StatsGrid({ stats }: StatsGridProps) {
                     decimals={item.decimals || 0}
                   />
                 </p>
+                <div className="mt-1 h-8 w-full opacity-50">
+  <ResponsiveContainer width="100%" height="100%">
+    <AreaChart data={generateSparklineData(item.label)}>
+      <Area
+        type="monotone"
+        dataKey="value"
+        stroke={item.color.replace("text-", "#")}
+        fill={item.color.replace("text-", "#")}
+        fillOpacity={0.2}
+        strokeWidth={2}
+      />
+    </AreaChart>
+  </ResponsiveContainer>
+</div>
               </div>
             </CardContent>
           </Card>
