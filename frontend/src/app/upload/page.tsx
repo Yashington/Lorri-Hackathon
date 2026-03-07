@@ -9,13 +9,16 @@ import FileDropZone from "@/components/upload/FileDropZone";
 import ProcessingAnimation from "@/components/upload/ProcessingAnimation";
 import { reconciliationApi, documentApi } from "@/lib/api";
 import type { DocumentType } from "@/lib/types";
-import { Sparkles, Upload, FileText } from "lucide-react";
+import { Sparkles, Upload, FileText, CheckCircle2 } from "lucide-react";
 
 type UploadedFiles = {
   lorry_receipt: File | null;
   proof_of_delivery: File | null;
   invoice: File | null;
 };
+
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+const fadeUp = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
 export default function UploadPage() {
   const router = useRouter();
@@ -37,7 +40,6 @@ export default function UploadPage() {
     setError(null);
     try {
       const result = await reconciliationApi.demo();
-      // Artificial delay for animation impact
       await new Promise((r) => setTimeout(r, 3000));
       router.push(`/reconciliation/${result.session_id}`);
     } catch (err) {
@@ -59,11 +61,7 @@ export default function UploadPage() {
         documentApi.upload(files.proof_of_delivery, "proof_of_delivery"),
         documentApi.upload(files.invoice, "invoice"),
       ]);
-      const result = await reconciliationApi.run(
-        lr.document_id,
-        pod.document_id,
-        inv.document_id
-      );
+      const result = await reconciliationApi.run(lr.document_id, pod.document_id, inv.document_id);
       router.push(`/reconciliation/${result.session_id}`);
     } catch (err) {
       setError("Upload or reconciliation failed. Check the backend.");
@@ -79,105 +77,89 @@ export default function UploadPage() {
     );
   }
 
-  const allFilesUploaded =
-    files.lorry_receipt && files.proof_of_delivery && files.invoice;
+  const allFilesUploaded = files.lorry_receipt && files.proof_of_delivery && files.invoice;
+  const uploadedCount = [files.lorry_receipt, files.proof_of_delivery, files.invoice].filter(Boolean).length;
 
   return (
-    <div className="mx-auto max-w-5xl space-y-8">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <h1 className="text-2xl font-bold">New 3-Way Audit</h1>
-        <p className="text-muted-foreground">
-          Upload Lorry Receipt, Proof of Delivery, and Invoice for automated
-          reconciliation
-        </p>
+    <motion.div variants={container} initial="hidden" animate="show" className="mx-auto max-w-5xl space-y-6">
+      <motion.div variants={fadeUp}>
+        <h1 className="text-3xl font-bold tracking-tight"><span className="gradient-text">New 3-Way Audit</span></h1>
+        <p className="mt-1 text-muted-foreground">Upload Lorry Receipt, Proof of Delivery, and Invoice for automated reconciliation</p>
       </motion.div>
 
       {/* Step indicator */}
-      <div className="flex items-center justify-center gap-4 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-            1
+      <motion.div variants={fadeUp} className="flex items-center justify-center gap-4 text-sm">
+        {[
+          { num: 1, label: "Upload Documents", done: uploadedCount === 3 },
+          { num: 2, label: "AI Extraction", done: false },
+          { num: 3, label: "Results", done: false },
+        ].map((s, i) => (
+          <div key={s.num} className="flex items-center gap-2">
+            {i > 0 && <div className="h-px w-8 bg-border" />}
+            <motion.div
+              animate={s.done ? { scale: [1, 1.1, 1] } : {}}
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all ${
+                s.done
+                  ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/25"
+                  : s.num === 1
+                  ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-lg shadow-indigo-500/25"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {s.done ? <CheckCircle2 className="h-4 w-4" /> : s.num}
+            </motion.div>
+            <span className={s.num === 1 || s.done ? "font-medium" : "text-muted-foreground"}>{s.label}</span>
           </div>
-          <span className="font-medium">Upload Documents</span>
-        </div>
-        <div className="h-px w-12 bg-border" />
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
-            2
-          </div>
-          <span className="text-muted-foreground">AI Extraction</span>
-        </div>
-        <div className="h-px w-12 bg-border" />
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-xs font-bold text-muted-foreground">
-            3
-          </div>
-          <span className="text-muted-foreground">Results</span>
-        </div>
-      </div>
+        ))}
+      </motion.div>
 
       {/* Upload slots */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <FileText className="h-5 w-5" />
-            Upload Documents
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex gap-4">
-            <FileDropZone
-              label="Lorry Receipt"
-              shortLabel="LR"
-              onFileSelect={(f) => handleFileSelect("lorry_receipt", f)}
-            />
-            <FileDropZone
-              label="Proof of Delivery"
-              shortLabel="POD"
-              onFileSelect={(f) => handleFileSelect("proof_of_delivery", f)}
-            />
-            <FileDropZone
-              label="Invoice"
-              shortLabel="INV"
-              onFileSelect={(f) => handleFileSelect("invoice", f)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+      <motion.div variants={fadeUp}>
+        <Card className="border-border/50 shadow-lg">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5 text-primary" />
+              Upload Documents
+              {uploadedCount > 0 && (
+                <Badge className="ml-2 bg-primary/10 text-primary border-0">{uploadedCount}/3 uploaded</Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4">
+              <FileDropZone label="Lorry Receipt" shortLabel="LR" onFileSelect={(f) => handleFileSelect("lorry_receipt", f)} />
+              <FileDropZone label="Proof of Delivery" shortLabel="POD" onFileSelect={(f) => handleFileSelect("proof_of_delivery", f)} />
+              <FileDropZone label="Invoice" shortLabel="INV" onFileSelect={(f) => handleFileSelect("invoice", f)} />
+            </div>
+          </CardContent>
+        </Card>
+      </motion.div>
 
       {error && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700"
-        >
+        <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500">
           {error}
         </motion.div>
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-between">
-        <Button
-          variant="outline"
-          onClick={handleDemoRun}
-          className="gap-2"
-        >
+      <motion.div variants={fadeUp} className="flex items-center justify-between">
+        <Button variant="outline" onClick={handleDemoRun} className="gap-2 rounded-xl">
           <Sparkles className="h-4 w-4" />
           Use Sample Documents (Demo)
         </Button>
-
         <Button
           onClick={handleUploadAndReconcile}
           disabled={!allFilesUploaded}
-          className="gap-2"
+          className="gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg shadow-indigo-500/25 disabled:opacity-50 disabled:shadow-none"
         >
           <Upload className="h-4 w-4" />
           Start Reconciliation
         </Button>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
+}
+
+function Badge({ className, children, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${className}`} {...props}>{children}</span>;
 }

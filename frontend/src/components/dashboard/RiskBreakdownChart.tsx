@@ -13,7 +13,7 @@ interface RiskBreakdownChartProps {
 
 export default function RiskBreakdownChart({ data }: RiskBreakdownChartProps) {
   return (
-    <Card className="border-0 bg-linear-to-br from-slate-50 to-white shadow-xl">
+    <Card className="border-border/50 shadow-lg">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           Risk Level Distribution

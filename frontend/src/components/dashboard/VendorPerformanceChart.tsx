@@ -33,7 +33,7 @@ export default function VendorPerformanceChart({
   }));
 
   return (
-    <Card className="border-0 bg-linear-to-br from-slate-50 to-white shadow-xl lg:col-span-2">
+    <Card className="border-border/50 shadow-lg lg:col-span-2">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           Top Vendor Performance

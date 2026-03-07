@@ -1,47 +1,55 @@
 "use client";
 
-import { useState } from "react";
 import { useTheme } from "next-themes";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import { Search, Moon, Sun, Bell, User, Settings } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, Moon, Sun, User, Menu, Bell } from "lucide-react";
 import { useUIStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const { theme, setTheme } = useTheme();
-  const [searchOpen, setSearchOpen] = useState(false);
-  const { searchQuery, setSearchQuery } = useUIStore();
-  const [notificationCount] = useState(3);
+  const { searchQuery, setSearchQuery, sidebarOpen, toggleSidebar } =
+    useUIStore();
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200/50 bg-white/80 backdrop-blur-lg dark:border-slate-800 dark:bg-slate-900/80">
-      <div className="ml-64 flex items-center justify-between px-8 py-4">
+    <header
+      className={cn(
+        "sticky top-0 z-30 border-b border-border/50 bg-background/60 backdrop-blur-xl transition-all duration-300"
+      )}
+    >
+      <div className="flex h-14 items-center gap-4 px-4 md:px-6">
+        {/* Mobile hamburger */}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="rounded-lg p-2 hover:bg-accent md:hidden"
+          onClick={toggleSidebar}
+        >
+          <Menu className="h-5 w-5 text-muted-foreground" />
+        </motion.button>
+
         {/* Search Bar */}
-        <div className="flex flex-1 max-w-md items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 transition-colors hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800">
-          <Search className="h-4 w-4 text-slate-400" />
+        <div className="group flex max-w-md flex-1 items-center gap-2 rounded-xl border border-border/50 bg-muted/30 px-4 py-2 transition-all focus-within:border-primary/50 focus-within:bg-background focus-within:shadow-sm focus-within:shadow-primary/5">
+          <Search className="h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
           <input
             type="text"
             placeholder="Search audits, vendors..."
-            className="w-full bg-transparent text-sm outline-none placeholder:text-slate-400"
+            className="w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground/60"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchOpen(true)}
           />
         </div>
 
         {/* Right Actions */}
-        <div className="ml-auto flex items-center gap-4">
-          {/* Notifications */}
+        <div className="ml-auto flex items-center gap-2">
+          {/* Notification */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="relative rounded-xl p-2 hover:bg-accent"
           >
-            <Bell className="h-5 w-5 text-slate-600 dark:text-slate-300" />
-            {notificationCount > 0 && (
-              <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" />
-            )}
+            <Bell className="h-[18px] w-[18px] text-muted-foreground" />
+            <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
           </motion.button>
 
           {/* Theme Toggle */}
@@ -49,34 +57,37 @@ export default function Header() {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="rounded-xl p-2 hover:bg-accent"
           >
-            {theme === "dark" ? (
-              <Sun className="h-5 w-5 text-slate-600 dark:text-slate-300" />
-            ) : (
-              <Moon className="h-5 w-5 text-slate-600" />
-            )}
+            <AnimatedThemeIcon theme={theme} />
           </motion.button>
 
-          {/* Settings */}
-          <motion.button
+          {/* User Avatar */}
+          <motion.div
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
-          >
-            <Settings className="h-5 w-5 text-slate-600 dark:text-slate-300" />
-          </motion.button>
-
-          {/* User Menu */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative h-9 w-9 rounded-full bg-linear-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white shadow-md"
+            className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg shadow-indigo-500/20"
           >
             <User className="h-4 w-4" />
-          </motion.button>
+          </motion.div>
         </div>
       </div>
     </header>
+  );
+}
+
+function AnimatedThemeIcon({ theme }: { theme: string | undefined }) {
+  return (
+    <motion.div
+      key={theme}
+      initial={{ rotate: -90, opacity: 0 }}
+      animate={{ rotate: 0, opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {theme === "dark" ? (
+        <Sun className="h-[18px] w-[18px] text-amber-400" />
+      ) : (
+        <Moon className="h-[18px] w-[18px] text-indigo-500" />
+      )}
+    </motion.div>
   );
 }

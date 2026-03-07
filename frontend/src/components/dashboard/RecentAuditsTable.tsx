@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   flexRender,
   getCoreRowModel,
@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, Eye, Download, AlertCircle } from "lucide-react";
 import type { ReconciliationResult } from "@/lib/types";
 import { RISK_COLORS } from "@/lib/constants";
+import { useUIStore } from "@/lib/store";
 
 interface RecentAuditsTableProps {
   data: ReconciliationResult[];
@@ -29,6 +30,11 @@ export default function RecentAuditsTable({ data }: RecentAuditsTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const { searchQuery } = useUIStore();
+
+  useEffect(() => {
+    setGlobalFilter(searchQuery);
+  }, [searchQuery]);
 
   const columns: ColumnDef<ReconciliationResult>[] = [
     {
@@ -69,7 +75,7 @@ export default function RecentAuditsTable({ data }: RecentAuditsTableProps) {
           <div className="h-1 w-12 overflow-hidden rounded-full bg-slate-200">
             <div
               className="h-full bg-linear-to-r from-blue-400 to-blue-600"
-              style={{ width: `${(info.getValue() as number) / 100}` }}
+              style={{ width: `${info.getValue() as number}%` }}
             />
           </div>
         </div>
@@ -147,20 +153,20 @@ export default function RecentAuditsTable({ data }: RecentAuditsTableProps) {
   });
 
   return (
-    <Card className="border-0 bg-linear-to-br from-slate-50 to-white shadow-xl">
-      <CardHeader className="border-b border-slate-200/50 pb-4">
+    <Card className="border-border/50 shadow-lg">
+      <CardHeader className="border-b border-border/50 pb-4">
         <CardTitle className="text-lg">Recent Audits</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b bg-slate-50/50">
+              <tr className="border-b bg-slate-50/50 dark:bg-slate-800/50">
                 {table.getHeaderGroups().map((headerGroup) =>
                   headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="cursor-pointer select-none px-6 py-4 text-left font-medium text-slate-700 hover:bg-slate-100/50"
+                      className="cursor-pointer select-none px-6 py-4 text-left font-medium text-slate-700 hover:bg-slate-100/50 dark:text-slate-300 dark:hover:bg-slate-700/50"
                       onClick={header.column.getToggleSortingHandler()}
                     >
                       <div className="flex items-center gap-2">
@@ -186,7 +192,7 @@ export default function RecentAuditsTable({ data }: RecentAuditsTableProps) {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="group border-b border-slate-100 transition-colors hover:bg-slate-50/50"
+                  className="group border-b border-slate-100 transition-colors hover:bg-slate-50/50 dark:border-slate-700 dark:hover:bg-slate-800/50"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-6 py-4">
@@ -200,7 +206,7 @@ export default function RecentAuditsTable({ data }: RecentAuditsTableProps) {
         </div>
 
         {/* Pagination */}
-        <div className="flex items-center justify-between border-t border-slate-200 px-6 py-4">
+        <div className="flex items-center justify-between border-t border-slate-200 dark:border-slate-700 px-6 py-4">
           <div className="text-sm text-muted-foreground">
             Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
             {Math.min(

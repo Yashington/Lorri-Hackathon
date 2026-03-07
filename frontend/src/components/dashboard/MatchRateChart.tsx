@@ -18,7 +18,7 @@ interface MatchRateChartProps {
 
 export default function MatchRateChart({ data }: MatchRateChartProps) {
   return (
-    <Card className="col-span-2 overflow-hidden border-0 bg-linear-to-br from-slate-50 to-white shadow-xl">
+    <Card className="col-span-2 overflow-hidden border-border/50 shadow-lg">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-muted-foreground">
           Match Rate Trend

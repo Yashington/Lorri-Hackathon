@@ -4,6 +4,7 @@ import { Toaster } from "react-hot-toast";
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
+import MainContent from "@/components/layout/MainContent";
 import { Providers } from "@/components/Providers";
 
 const geistSans = Geist({
@@ -32,12 +33,20 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <Sidebar />
-          <Header />
-          <main className="ml-64 min-h-screen bg-background pt-20">
-            <div className="p-8">{children}</div>
-          </main>
-          <Toaster position="top-right" />
+          <div className="flex min-h-screen">
+            <Sidebar />
+            <div className="flex flex-1 flex-col">
+              <Header />
+              <MainContent>{children}</MainContent>
+            </div>
+          </div>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              className: "!bg-card !text-card-foreground !border !border-border !shadow-lg",
+              duration: 3000,
+            }}
+          />
         </Providers>
       </body>
     </html>
