@@ -74,13 +74,13 @@ export default function FileDropZone({
         {file ? (
           <div className="flex flex-col items-center gap-2">
             <FileCheck className="h-10 w-10 text-emerald-600" />
-            <p className="text-sm font-medium">{file.name}</p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm font-medium text-emerald-900">{file.name}</p>
+            <p className="text-xs text-emerald-700 font-medium">
               {(file.size / 1024).toFixed(1)} KB
             </p>
             <button
               onClick={clearFile}
-              className="mt-1 flex items-center gap-1 text-xs text-red-500 hover:text-red-700"
+              className="mt-1 flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium"
             >
               <X className="h-3 w-3" /> Remove
             </button>
