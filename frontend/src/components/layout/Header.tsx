@@ -14,7 +14,9 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 border-b border-border/50 bg-background/60 backdrop-blur-xl transition-all duration-300"
+        "sticky top-0 z-50 border-b border-border/50 bg-background/60 backdrop-blur-xl transition-all duration-300",
+        "ml-0",
+        sidebarOpen ? "md:ml-72" : "md:ml-[70px]"
       )}
     >
       <div className="flex h-14 items-center gap-4 px-4 md:px-6">

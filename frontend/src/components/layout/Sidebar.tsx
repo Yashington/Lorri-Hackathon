@@ -58,7 +58,7 @@ export default function Sidebar() {
 
       <aside
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border/50 bg-card/80 backdrop-blur-xl transition-all duration-300",
+          "fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-border/50 bg-card/80 backdrop-blur-xl transition-all duration-300",
           isMobile
             ? cn("w-72", sidebarOpen ? "translate-x-0" : "-translate-x-full")
             : cn(isExpanded ? "w-72" : "w-[70px]")
