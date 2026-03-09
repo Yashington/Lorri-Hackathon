@@ -28,6 +28,9 @@ app.include_router(dashboard.router, prefix="/api", tags=["Dashboard"])
 os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
+@app.get("/")
+def home():
+    return {"status": "ReconAI Backend is Live", "version": "1.0"}
 
 @app.get("/api/health")
 async def health():
