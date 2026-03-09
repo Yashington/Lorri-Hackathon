@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     AZURE_ENDPOINT: str = ""
     AZURE_API_KEY: str = ""
     USE_MOCK_DATA: bool = True
-    CORS_ORIGINS: str = "http://localhost:3000"
+    CORS_ORIGINS: str = "http://localhost:3000,https://recon-ai-m9j5.vercel.app"
     UPLOAD_DIR: str = "./uploads"
 
     class Config:
